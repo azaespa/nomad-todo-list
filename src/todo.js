@@ -11,8 +11,27 @@ const FINISHED_LS = "FINISHED";
 let pendingToDos = [];
 let finishedToDos = [];
 
+function handleClickFinishedDelBtn(event){
+    const li = removeFromList(event);
+    const cleanFinishedToDos = finishedToDos.filter(function (toDo){
+        return toDo.id !== Number(li.id);
+    });
+    finishedToDos = cleanFinishedToDos;
+    saveFinishedToDos();
+}
+
 function handleClickReturnBtn(event){
-    console.log("return button is working!!!")
+    const li = removeFromList(event);
+    const cleanFinishedToDos = finishedToDos.filter(function (toDo){
+        return toDo.id !== Number(li.id);
+    });
+    const finishedToDoObj = finishedToDos.find(function (toDo) {
+        return toDo.id === Number(li.id);
+    })
+    finishedToDos = cleanFinishedToDos;
+    finishedToDo = finishedToDoObj.text;
+    saveFinishedToDos();
+    paintPendingToDos(finishedToDo);
 }
 
 function paintFinishedToDos(object){
@@ -24,7 +43,7 @@ function paintFinishedToDos(object){
 
     span.innerText = object.text;
     deleteBtn.innerText = "❌";
-    deleteBtn.addEventListener("click", handleClickDeleteBtn);
+    deleteBtn.addEventListener("click", handleClickFinishedDelBtn);
     returnBtn.innerText = "⏪";
     returnBtn.addEventListener("click", handleClickReturnBtn);
     
@@ -51,12 +70,12 @@ function handleClickFinishedBtn(event) {
     const cleanToDos = pendingToDos.filter(function(toDo){
         return toDo.id !== Number(li.id);
     });
-    const finishedToDoObj = pendingToDos.find(function(toDo){
+    const pendingToDoObj = pendingToDos.find(function(toDo){
         return toDo.id === Number(li.id);
     })
     pendingToDos = cleanToDos;
     savePendingToDos();
-    paintFinishedToDos(finishedToDoObj);
+    paintFinishedToDos(pendingToDoObj);
 }
 
 function removeFromList(event){
@@ -65,12 +84,12 @@ function removeFromList(event){
     return li.parentNode.removeChild(li);
 }
 
-function handleClickDeleteBtn(event){
+function handleClickPendingDelBtn(event){
     const li = removeFromList(event);
-    const cleanToDos = pendingToDos.filter(function(toDo) {
+    const cleanPendingToDos = pendingToDos.filter(function(toDo) {
         return toDo.id !== Number(li.id);
     })
-    pendingToDos = cleanToDos;
+    pendingToDos = cleanPendingToDos;
     savePendingToDos();
 }
 
@@ -84,7 +103,7 @@ function paintPendingToDos(text){
 
     span.innerText = text;
     deleteBtn.innerText = "❌";
-    deleteBtn.addEventListener("click", handleClickDeleteBtn);
+    deleteBtn.addEventListener("click", handleClickPendingDelBtn);
     finishedBtn.innerText = "✔️";
     finishedBtn.addEventListener("click", handleClickFinishedBtn);
 
@@ -113,7 +132,10 @@ function handleSubmitToDo(event) {
 function loadFinishedToDos() {
     const loadedFinishedToDos = localStorage.getItem(FINISHED_LS);
     if (loadedFinishedToDos !== null){
-        console.log("paint to dos");
+        const parsedFinishedToDos = JSON.parse(loadedFinishedToDos);
+        parsedFinishedToDos.forEach(element => {
+            paintFinishedToDos(element);
+        })
     }
 }
 
