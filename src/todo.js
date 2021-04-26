@@ -34,14 +34,19 @@ function handleClickReturnBtn(event){
     paintPendingToDos(finishedToDo);
 }
 
+function saveFinishedToDos(){
+    localStorage.setItem(FINISHED_LS, JSON.stringify(finishedToDos));
+}
+
 function paintFinishedToDos(object){
     const li = document.createElement("li");
     const span = document.createElement("span");
     const deleteBtn = document.createElement("button");
     const returnBtn = document.createElement("button");
     const id = object.id;
+    const text = object.text;
 
-    span.innerText = object.text;
+    span.innerText = text;
     deleteBtn.innerText = "❌";
     deleteBtn.addEventListener("click", handleClickFinishedDelBtn);
     returnBtn.innerText = "⏪";
@@ -57,23 +62,19 @@ function paintFinishedToDos(object){
     saveFinishedToDos();
 }
 
-function saveFinishedToDos(){
-    localStorage.setItem(FINISHED_LS, JSON.stringify(finishedToDos));
-}
-
 function savePendingToDos(){
     localStorage.setItem(PENDING_LS, JSON.stringify(pendingToDos));
 }
 
 function handleClickFinishedBtn(event) {
     const li = removeFromList(event);
-    const cleanToDos = pendingToDos.filter(function(toDo){
+    const cleanPendingToDos = pendingToDos.filter(function(toDo){
         return toDo.id !== Number(li.id);
     });
     const pendingToDoObj = pendingToDos.find(function(toDo){
         return toDo.id === Number(li.id);
     })
-    pendingToDos = cleanToDos;
+    pendingToDos = cleanPendingToDos;
     savePendingToDos();
     paintFinishedToDos(pendingToDoObj);
 }
